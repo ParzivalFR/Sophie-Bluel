@@ -1,25 +1,13 @@
 // Récupération des Travaux
-fetch("http://localhost:5678/api/works")
-  .then((res) => res.json())
-  .then((works) => {
-    const allWorks = works;
-    window.localStorage.setItem("works", JSON.stringify(allWorks));
-    displayWorks(works);
-  })
-  .catch((error) => {
-    console.error(`${error}`);
-  });
-// Récupération des Catégories
-fetch("http://localhost:5678/api/categories")
-  .then((res) => res.json())
-  .then((categories) => {
-    const allCategories = categories;
-    window.localStorage.setItem("categories", JSON.stringify(allCategories));
-    displayBtnFilter(categories);
-  })
-  .catch((error) => {
-    console.error(`${error}`);
-  });
+const fetchWorks = await fetch("http://localhost:5678/api/works");
+const works = await fetchWorks.json();
+window.localStorage.setItem("works", JSON.stringify(works));
+const fetchCategories = await fetch("http://localhost:5678/api/categories");
+const categories = await fetchCategories.json();
+window.localStorage.setItem("categories", JSON.stringify(categories));
+
+displayWorks(works);
+displayBtnFilter();
 
 function displayWorks(works) {
   const gallery = document.querySelector(".gallery");
@@ -37,7 +25,7 @@ function displayWorks(works) {
   });
 }
 
-function displayBtnFilter(categories) {
+function displayBtnFilter() {
   // Selection du parent
   const title = document.querySelector("#portfolio");
   const subTitle = title.children[1];
@@ -45,15 +33,29 @@ function displayBtnFilter(categories) {
   divBtn.classList.add("divBtn");
   title.insertBefore(divBtn, subTitle);
 
+  const gallery = document.querySelector(".gallery");
   const btnAll = document.createElement("button");
-  btnAll.classList.add("btn-all");
+  btnAll.classList.add("btnAll");
   btnAll.innerText = "TOUS";
   divBtn.appendChild(btnAll);
+  btnAll.addEventListener("click", () => {
+    gallery.innerHTML = "";
+    displayWorks(works);
+  });
   // Création des bouton grâce à l'API
   categories.forEach((categorie) => {
     const buttons = document.createElement("button");
     buttons.innerText = categorie.name;
-    buttons.classList.add(`btn-${categorie.name.replace(/\s+/g, "-")}`); // Remplace les espaces par des tirets
+    buttons.classList.add(
+      `btn${categorie.name.replace(/[^\w\s]/gi, "").replace(/\s+/g, "-")}`
+    ); // Remplace les espaces par des tirets & supprime les caractères spéciaux
+    buttons.addEventListener("click", () => {
+      gallery.innerHTML = "";
+      const filterWorks = works.filter(
+        (work) => work.category.name === categorie.name
+      );
+      displayWorks(filterWorks);
+    });
     divBtn.appendChild(buttons);
   });
 }

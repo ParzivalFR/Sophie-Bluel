@@ -10,6 +10,9 @@
   font-size: 100%;
   font: inherit;
   vertical-align: baseline;
+  text-decoration: none;
+  list-style-type: none;
+  color: inherit;
 }
 /* HTML5 display-role reset for older browsers */
 article,
@@ -25,13 +28,7 @@ nav,
 section {
   display: block;
 }
-body {
-  line-height: 1;
-}
-ol,
-ul {
-  list-style: none;
-}
+
 blockquote,
 q {
   quotes: none;
@@ -54,12 +51,20 @@ body {
   font-family: "Work Sans";
   font-size: 14px;
   background-color: #fffef8;
+  line-height: 1;
 }
 header {
   display: flex;
   justify-content: space-between;
   margin: 50px 0;
 }
+
+header img {
+  display: flex;
+  align-items: center;
+  width: 22px;
+}
+
 section {
   margin: 50px 0;
 }
@@ -88,16 +93,17 @@ h2 {
 nav ul {
   display: flex;
   align-items: center;
-  list-style-type: none;
 }
 nav li {
   padding: 0 10px;
-  font-size: 1.2em;
+  font-size: 16px;
 }
 
-li:hover {
+nav a:hover {
+  cursor: pointer;
   color: #b1663c;
 }
+
 #introduction {
   display: flex;
   align-items: center;
@@ -133,7 +139,7 @@ li:hover {
   margin: 51px 0;
 }
 
-.divBtn .btn-all {
+.divBtn .btnAll {
   color: #fff;
   background-color: #1d6154;
 }
@@ -214,4 +220,8 @@ footer nav ul {
   display: flex;
   justify-content: flex-end;
   margin: 2em;
+}
+
+footer li {
+  font-size: 14px;
 }
