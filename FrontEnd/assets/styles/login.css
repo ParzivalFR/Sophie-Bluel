@@ -3,6 +3,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  overflow: hidden;
   list-style: none;
   text-decoration: none;
   color: inherit;
@@ -107,6 +108,9 @@ a:hover {
   border-radius: 60px;
   background: #1d6154;
   color: #fff;
+  font-family: "Syne";
+  font-size: 14px;
+  font-size: 700;
 }
 
 #form-login label {
@@ -115,15 +119,37 @@ a:hover {
   font-weight: 500;
 }
 
+.forgot-password {
+  margin-top: 28px;
+  font-size: 14px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 footer {
   position: fixed;
   bottom: 0;
   right: 107px;
   padding: 20px 0;
 }
-/* footer {
+
+/* Message d'erreur */
+
+.div-error {
   display: flex;
-  justify-content: right;
-  padding: 20px 0;
-  border: solid 1px;
-} */
+  justify-content: center;
+  align-items: center;
+  width: 40%;
+  height: 50px;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 5px;
+  position: absolute;
+  top: 170px;
+}
+
+.div-error p {
+  font-size: 14px;
+  font-weight: 700;
+}
