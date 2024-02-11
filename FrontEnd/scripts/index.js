@@ -12,14 +12,12 @@ displayBtnFilter();
 // Affichage des travaux
 function displayWorks(works) {
   const gallery = document.querySelector(".gallery");
-  gallery.innerHTML = "";
   works.forEach((work) => {
     const figure = document.createElement("figure");
     const img = document.createElement("img");
     const figcaption = document.createElement("figcaption");
     img.src = work.imageUrl;
     figcaption.innerText = work.title;
-
     gallery.appendChild(figure);
     figure.appendChild(img);
     figure.appendChild(figcaption);
@@ -69,7 +67,7 @@ if (token) {
   btnLogin.innerText = "logout";
   btnLogin.style.fontWeight = "700";
   console.log("Vous êtes connecté");
-
+  // Optionnelle
   btnLogin.addEventListener("click", () => {
     localStorage.removeItem("token");
     window.location.href = "login.html";

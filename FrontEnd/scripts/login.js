@@ -1,12 +1,12 @@
-async function displayErrorLogin() {
+async function displayErrorLogin(msg) {
   const sectionLogin = document.querySelector(".login");
   const divErrorMsg = document.createElement("div");
-  divErrorMsg.classList.add("div-error");
+  divErrorMsg.classList.add("div-msg", "div-error");
   const errorMsg = document.createElement("p");
   errorMsg.classList.add("error-msg");
   sectionLogin.appendChild(divErrorMsg);
   divErrorMsg.appendChild(errorMsg);
-  errorMsg.innerText = "🔎 Veuillez remplir tous les champs !";
+  errorMsg.innerText = msg;
   // Suppression du message après 5 secondes
   setTimeout(() => {
     divErrorMsg.remove();
@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const valuePassword = password.value.trim();
 
     if (valueEmail === "" || valuePassword === "") {
-      displayErrorLogin();
+      displayErrorLogin("🔎 Veuillez remplir tous les champs !");
     } else {
       try {
         const fetchUser = await fetch("http://localhost:5678/api/users/login", {
@@ -36,14 +36,22 @@ document.addEventListener("DOMContentLoaded", () => {
         if (fetchUser.ok) {
           const user = await fetchUser.json();
           localStorage.setItem("token", user.token);
+          // Suppression du message après 3 secondes
           email.value = "";
           password.value = "";
-          window.location.href = "index.html";
+          // Message de confirmation + 3 secs de délais avant redirection
+          displayErrorLogin("🟢 Vous êtes connecté avec succès !");
+          const divMsg = document.querySelector(".div-msg");
+          divMsg.classList.remove("div-error");
+          divMsg.classList.add("div-confirm");
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 3000);
         } else {
-          displayErrorLogin();
+          displayErrorLogin("🔎 Adresse mail et/ou mot de passe incorrect !");
         }
       } catch (error) {
-        displayErrorLogin();
+        displayErrorLogin(error);
       }
     }
   }); // Ajoutez la parenthèse fermante ici

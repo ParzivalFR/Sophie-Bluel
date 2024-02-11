@@ -113,6 +113,12 @@ a:hover {
   font-size: 700;
 }
 
+#form-login input[type="submit"]:hover {
+  cursor: pointer;
+  transition: background-color ease 0.8s;
+  background-color: #0e2f28;
+}
+
 #form-login label {
   width: 100%;
   margin-bottom: 7px;
@@ -149,7 +155,22 @@ footer {
   top: 170px;
 }
 
-.div-error p {
+.div-confirm {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40%;
+  height: 50px;
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  border-radius: 5px;
+  position: absolute;
+  top: 170px;
+}
+
+.div-error p,
+.div-confirm p {
   font-size: 14px;
   font-weight: 700;
 }
