@@ -9,6 +9,7 @@ window.localStorage.setItem("categories", JSON.stringify(categories));
 displayWorks(works);
 displayBtnFilter();
 
+// Affichage des travaux
 function displayWorks(works) {
   const gallery = document.querySelector(".gallery");
   gallery.innerHTML = "";
@@ -25,6 +26,7 @@ function displayWorks(works) {
   });
 }
 
+// Affichage des boutons de filtre
 function displayBtnFilter() {
   // Selection du parent
   const title = document.querySelector("#portfolio");
@@ -57,5 +59,19 @@ function displayBtnFilter() {
       displayWorks(filterWorks);
     });
     divBtn.appendChild(buttons);
+  });
+}
+
+const token = localStorage.getItem("token");
+
+if (token) {
+  const btnLogin = document.querySelector(".btn-login");
+  btnLogin.innerText = "logout";
+  btnLogin.style.fontWeight = "700";
+  console.log("Vous êtes connecté");
+
+  btnLogin.addEventListener("click", () => {
+    localStorage.removeItem("token");
+    window.location.href = "login.html";
   });
 }
