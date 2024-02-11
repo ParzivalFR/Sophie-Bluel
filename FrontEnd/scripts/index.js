@@ -66,10 +66,33 @@ if (token) {
   const btnLogin = document.querySelector(".btn-login");
   btnLogin.innerText = "logout";
   btnLogin.style.fontWeight = "700";
-  console.log("Vous êtes connecté");
+  console.log("🟢 Vous êtes connecté avec succès !");
+  displayModeEdit();
   // Optionnelle
   btnLogin.addEventListener("click", () => {
     localStorage.removeItem("token");
     window.location.href = "login.html";
   });
+}
+
+async function displayModeEdit() {
+  // Suppression des boutons de filtre
+  document.querySelector(".divBtn").remove();
+  // Ajout d'un header pour le mode édition
+  const header = document.querySelector("header");
+  header.style.marginTop = "109px";
+  const headerEdit = document.createElement("div");
+  headerEdit.classList.add("header-edit");
+  header.insertBefore(headerEdit, header.firstChild);
+  const btnEdit = document.createElement("div");
+  btnEdit.classList.add("btn-edit");
+  btnEdit.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> <p>Mode édition</p>`;
+  headerEdit.appendChild(btnEdit);
+  // Ajout d'un bouton pour ouvrir la modal
+  const titlePortfolio = document.querySelector(".title-portfolio");
+  const modify = document.createElement("a");
+  modify.href = "#";
+  modify.classList.add("modify");
+  modify.innerHTML = `<i class="fa-solid fa-pen-to-square"><span>modifier</span></i>`;
+  titlePortfolio.appendChild(modify);
 }
