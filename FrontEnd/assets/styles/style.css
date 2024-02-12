@@ -104,6 +104,11 @@ h2 {
   align-items: center;
 }
 
+.title-portfolio i {
+  display: flex;
+  gap: 5px;
+}
+
 .title-portfolio span {
   font-weight: normal;
   font-size: 14px;
@@ -225,4 +230,98 @@ footer li {
   gap: 10px;
   margin-top: 23px;
   color: #fff;
+}
+
+#modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+#modal-content {
+  position: absolute;
+  width: 630px;
+  height: 688px;
+  max-width: calc(100vw - 20px);
+  max-height: calc(100vh - 20px);
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#modal-content .fa-xmark {
+  position: absolute;
+  right: 25px;
+  top: 25px;
+  font-size: 24px;
+}
+
+#modal-content h3 {
+  font-family: "Work Sans";
+  font-size: 26px;
+  font-weight: 400;
+  margin: 60px 0 45px 0;
+}
+
+#modal-content .gallery-modal {
+  overflow-y: auto;
+  width: 80%;
+  height: 50%;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-column-gap: 5px;
+  grid-row-gap: 20px;
+}
+
+#modal-content hr {
+  width: 80%;
+  margin: 65px 0 38px 0;
+  border: solid 1px #b3b3b3;
+}
+
+#modal-content button {
+  width: 237px;
+  height: 36px;
+  border-radius: 60px;
+  border: none;
+  background-color: #1d6154;
+  color: white;
+  font-family: "Syne";
+  font-size: 14px;
+  margin-bottom: 40px;
+}
+
+#modal-content img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+#modal-content figure {
+  position: relative;
+}
+
+#modal-content .fa-trash-can {
+  position: absolute;
+  z-index: 1;
+  top: 5px;
+  right: 5px;
+  border: solid #000 5px;
+  border-radius: 4px;
+  color: white;
+  background-color: #000;
+}
+
+#modal-content .fa-trash-can:hover {
+  cursor: pointer;
 }

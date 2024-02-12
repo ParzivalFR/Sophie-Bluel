@@ -54,5 +54,5 @@ document.addEventListener("DOMContentLoaded", () => {
         displayErrorLogin(error);
       }
     }
-  }); // Ajoutez la parenthèse fermante ici
+  });
 });

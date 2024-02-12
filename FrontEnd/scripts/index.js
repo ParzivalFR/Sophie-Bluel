@@ -68,6 +68,8 @@ if (token) {
   btnLogin.style.fontWeight = "700";
   console.log("🟢 Vous êtes connecté avec succès !");
   displayModeEdit();
+  openAndCloseModal();
+  displayModalGallery();
   // Optionnelle
   btnLogin.addEventListener("click", () => {
     localStorage.removeItem("token");
@@ -95,4 +97,49 @@ async function displayModeEdit() {
   modify.classList.add("modify");
   modify.innerHTML = `<i class="fa-solid fa-pen-to-square"><span>modifier</span></i>`;
   titlePortfolio.appendChild(modify);
+}
+
+function openAndCloseModal() {
+  const modify = document.querySelector(".modify");
+  const modal = document.getElementById("modal");
+  const modalContent = document.getElementById("modal-content");
+  const closeModal = document.createElement("i");
+  closeModal.classList.add("fa-solid", "fa-xmark");
+  modalContent.appendChild(closeModal);
+  // Ouverture de la modal
+  modify.addEventListener("click", () => {
+    modal.style.display = "flex";
+  });
+  // Fermeture de la modal
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal || event.target === closeModal) {
+      modal.style.display = "none";
+    }
+  });
+}
+
+function displayModalGallery() {
+  const modalContent = document.getElementById("modal-content");
+  const title = document.createElement("h3");
+  title.innerText = "Galerie Photo";
+  const divGallery = document.createElement("div");
+  divGallery.classList.add("gallery-modal");
+  const bottomLine = document.createElement("hr");
+  const btnAddImg = document.createElement("button");
+  btnAddImg.innerText = "Ajouter une image";
+  modalContent.appendChild(title);
+  modalContent.appendChild(divGallery);
+  modalContent.appendChild(bottomLine);
+  modalContent.appendChild(btnAddImg);
+  // Ajout des images
+  works.forEach((work) => {
+    const figure = document.createElement("figure");
+    const img = document.createElement("img");
+    const elementTrash = document.createElement("i");
+    elementTrash.classList.add("fa-solid", "fa-trash-can");
+    img.src = work.imageUrl;
+    divGallery.appendChild(figure);
+    figure.appendChild(img);
+    figure.appendChild(elementTrash);
+  });
 }
