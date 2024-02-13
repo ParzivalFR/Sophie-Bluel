@@ -145,7 +145,7 @@ footer {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 40%;
+  width: 30%;
   height: 50px;
   background-color: #f8d7da;
   color: #721c24;
@@ -159,7 +159,7 @@ footer {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 40%;
+  width: 30%;
   height: 50px;
   background-color: #d4edda;
   color: #155724;

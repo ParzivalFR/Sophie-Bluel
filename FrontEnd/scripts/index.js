@@ -133,6 +133,7 @@ function displayModalGallery() {
   modalContent.appendChild(btnAddImg);
   // Ajout des images
   works.forEach((work) => {
+    const worksId = work.id;
     const figure = document.createElement("figure");
     const img = document.createElement("img");
     const elementTrash = document.createElement("i");
@@ -141,5 +142,51 @@ function displayModalGallery() {
     divGallery.appendChild(figure);
     figure.appendChild(img);
     figure.appendChild(elementTrash);
+
+    elementTrash.addEventListener("click", (event) => {
+      deletedWork(worksId);
+      event.preventDefault();
+      figure.remove();
+    });
   });
+}
+
+async function deletedWork(worksId) {
+  const confirmationResult = await Swal.fire({
+    title: "Voulez-vous vraiment supprimer cette image ?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Oui",
+    cancelButtonText: "Non",
+  });
+
+  if (confirmationResult.isConfirmed) {
+    try {
+      const fetchWorks = await fetch(
+        `http://localhost:5678/api/works/${worksId}`,
+        {
+          method: "DELETE",
+          headers: {
+            accept: "*/*",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (fetchWorks.ok) {
+        console.log("🗑️ Vous avez supprimé un travail !");
+      } else {
+        console.error(
+          "Une erreur s'est produite lors de la suppression de l'image."
+        );
+      }
+    } catch (error) {
+      console.error(
+        "Une erreur s'est produite lors de la suppression de l'image:",
+        error
+      );
+    }
+  } else {
+    console.log("L'utilisateur a choisi 'Non' ou a annulé");
+  }
 }
