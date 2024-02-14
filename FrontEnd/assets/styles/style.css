@@ -8,6 +8,7 @@
   text-decoration: none;
   list-style-type: none;
   color: inherit;
+  scroll-behavior: smooth;
 }
 /** end reset css**/
 body {
@@ -324,6 +325,7 @@ footer li {
 }
 
 #modal-content .fa-trash-can:hover,
-#modal-content button:hover {
+#modal-content button:hover,
+#modal-content .fa-xmark:hover {
   cursor: pointer;
 }

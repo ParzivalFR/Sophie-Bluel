@@ -16,6 +16,7 @@ function displayWorks(works) {
     const figure = document.createElement("figure");
     const img = document.createElement("img");
     const figcaption = document.createElement("figcaption");
+    figure.classList.add(`figure-${work.id}`);
     img.src = work.imageUrl;
     figcaption.innerText = work.title;
     gallery.appendChild(figure);
@@ -138,55 +139,54 @@ function displayModalGallery() {
     const img = document.createElement("img");
     const elementTrash = document.createElement("i");
     elementTrash.classList.add("fa-solid", "fa-trash-can");
+    figure.classList.add(`figure-${worksId}`);
     img.src = work.imageUrl;
     divGallery.appendChild(figure);
     figure.appendChild(img);
     figure.appendChild(elementTrash);
 
-    elementTrash.addEventListener("click", (event) => {
-      deletedWork(worksId);
-      event.preventDefault();
-      figure.remove();
+    elementTrash.addEventListener("click", async (event) => {
+      const confirmationResult = await Swal.fire({
+        title: "Voulez-vous vraiment supprimer cette image ?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Oui",
+        cancelButtonText: "Non",
+      });
+
+      if (confirmationResult.isConfirmed) {
+        try {
+          const fetchWorks = await fetch(
+            `http://localhost:5678/api/works/${worksId}`,
+            {
+              method: "DELETE",
+              headers: {
+                accept: "*/*",
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+
+          if (fetchWorks.ok) {
+            document
+              .querySelectorAll(`.figure-${worksId}`)
+              .forEach((figure) => figure.remove());
+            event.preventDefault();
+            console.log("🗑️ Vous avez supprimé un travail !");
+          } else {
+            console.error(
+              "Une erreur s'est produite lors de la suppression de l'image."
+            );
+          }
+        } catch (error) {
+          console.error(
+            "Une erreur s'est produite lors de la suppression de l'image:",
+            error
+          );
+        }
+      } else {
+        console.log("L'utilisateur a choisi 'Non' ou a annulé");
+      }
     });
   });
-}
-
-async function deletedWork(worksId) {
-  const confirmationResult = await Swal.fire({
-    title: "Voulez-vous vraiment supprimer cette image ?",
-    icon: "question",
-    showCancelButton: true,
-    confirmButtonText: "Oui",
-    cancelButtonText: "Non",
-  });
-
-  if (confirmationResult.isConfirmed) {
-    try {
-      const fetchWorks = await fetch(
-        `http://localhost:5678/api/works/${worksId}`,
-        {
-          method: "DELETE",
-          headers: {
-            accept: "*/*",
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-
-      if (fetchWorks.ok) {
-        console.log("🗑️ Vous avez supprimé un travail !");
-      } else {
-        console.error(
-          "Une erreur s'est produite lors de la suppression de l'image."
-        );
-      }
-    } catch (error) {
-      console.error(
-        "Une erreur s'est produite lors de la suppression de l'image:",
-        error
-      );
-    }
-  } else {
-    console.log("L'utilisateur a choisi 'Non' ou a annulé");
-  }
 }
