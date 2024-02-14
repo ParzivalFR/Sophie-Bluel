@@ -71,6 +71,7 @@ if (token) {
   displayModeEdit();
   openAndCloseModal();
   displayModalGallery();
+
   // Optionnelle
   btnLogin.addEventListener("click", () => {
     localStorage.removeItem("token");
@@ -127,6 +128,7 @@ function displayModalGallery() {
   divGallery.classList.add("gallery-modal");
   const bottomLine = document.createElement("hr");
   const btnAddImg = document.createElement("button");
+  btnAddImg.classList.add("btn-add-img");
   btnAddImg.innerText = "Ajouter une image";
   modalContent.appendChild(title);
   modalContent.appendChild(divGallery);
@@ -189,4 +191,80 @@ function displayModalGallery() {
       }
     });
   });
+  btnAddImg.addEventListener("click", () => {
+    modalPushImg();
+  });
+}
+
+function modalPushImg() {
+  // Quand je clique sur le bouton "Ajouter une image"...
+
+  // ...je supprime le contenu de la modal...
+  const modalContent = document.getElementById("modal-content");
+  modalContent.remove();
+  const modal = document.getElementById("modal");
+  const modalAddimg = document.createElement("div");
+  modalAddimg.setAttribute("id", "modal-add-img");
+  modal.appendChild(modalAddimg);
+  // ...je crée un formulaire pour ajouter une image...
+  const title = document.createElement("h3");
+  title.innerText = "Ajouter une image";
+  const form = document.createElement("form");
+  form.setAttribute("id", "formAddImg");
+  const labelIconInput = document.createElement("label");
+  labelIconInput.classList.add("label-icon-input");
+  const iconImg = document.createElement("i");
+  iconImg.classList.add("fa-regular", "fa-image");
+  const inputAdd = document.createElement("input");
+  inputAdd.setAttribute("id", "addImg");
+  inputAdd.setAttribute("type", "file");
+  inputAdd.setAttribute("accept", "image/*");
+  inputAdd.setAttribute("name", "addImg");
+  const btnAddImg = document.createElement("input");
+  btnAddImg.setAttribute("type", "button");
+  btnAddImg.setAttribute("id", "btn-add-img");
+  btnAddImg.value = "+ Ajouter photo";
+  const descAddImg = document.createElement("p");
+  descAddImg.classList.add("desc-add-img");
+  descAddImg.innerText = "jpeg, png : 4mo max";
+  const labelTitle = document.createElement("label");
+  labelTitle.setAttribute("for", "title");
+  labelTitle.innerText = "Titre";
+  const inputTitle = document.createElement("input");
+  inputTitle.setAttribute("type", "text");
+  inputTitle.setAttribute("id", "title");
+  const labelCategory = document.createElement("label");
+  labelCategory.setAttribute("for", "category");
+  labelCategory.innerText = "Catégorie";
+  const selectCategory = document.createElement("select");
+  selectCategory.setAttribute("id", "category");
+  const optionObjets = document.createElement("option");
+  optionObjets.setAttribute("value", "Objets");
+  optionObjets.innerText = "Objets";
+  const optionHotel = document.createElement("option");
+  optionHotel.setAttribute("value", "Hôtel & restaurant");
+  optionHotel.innerText = "Hôtel & restaurant";
+  const optionAppartement = document.createElement("option");
+  optionAppartement.setAttribute("value", "Appartement");
+  optionAppartement.innerText = "Appartement";
+  const submitAddImg = document.createElement("input");
+  submitAddImg.setAttribute("type", "submit");
+  submitAddImg.setAttribute("value", "Ajouter");
+  submitAddImg.setAttribute("id", "submitAddImg");
+  // ...et je les ajoute à la modal
+  modal.appendChild(modalAddimg);
+  modalAddimg.appendChild(title);
+  modalAddimg.appendChild(form);
+  labelIconInput.appendChild(iconImg);
+  labelIconInput.appendChild(inputAdd);
+  labelIconInput.appendChild(btnAddImg);
+  labelIconInput.appendChild(descAddImg);
+  form.appendChild(labelIconInput);
+  form.appendChild(labelTitle);
+  form.appendChild(inputTitle);
+  form.appendChild(labelCategory);
+  form.appendChild(selectCategory);
+  selectCategory.appendChild(optionObjets);
+  selectCategory.appendChild(optionHotel);
+  selectCategory.appendChild(optionAppartement);
 }
