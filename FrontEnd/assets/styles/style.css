@@ -23,7 +23,7 @@ body {
 nav {
   display: flex;
   justify-content: space-between;
-  margin: 50px 0;
+  margin: 40px 0 50px 0;
 }
 
 nav img {
@@ -47,7 +47,7 @@ nav a:hover {
 }
 
 section {
-  margin: 50px 0;
+  margin: 120px 0;
 }
 
 h1 {
@@ -125,10 +125,17 @@ h2 {
   margin: 51px 0 0 0;
 }
 
-.divBtn .btnAll {
+/* .divBtn .btnAll {
   color: #fff;
   background-color: #1d6154;
-}
+} */
+
+/* .divBtn .btnAll:hover {
+  cursor: pointer;
+  background-color: #fff;
+  color: #1d6154;
+  transition: background-color 0.9s ease;
+} */
 
 .divBtn button {
   width: auto;
@@ -145,8 +152,14 @@ h2 {
 
 .divBtn button:hover {
   cursor: pointer;
-  transition: background-color 0.8s ease;
-  background-color: #86868687;
+  background-color: #1d6154;
+  transition: background-color 0.9s ease;
+  color: #fff;
+}
+
+.divBtn .active {
+  background-color: #1d6154;
+  color: #fff;
 }
 
 .gallery {
@@ -154,12 +167,15 @@ h2 {
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
+  grid-auto-rows: 500px;
   grid-column-gap: 20px;
-  grid-row-gap: 20px;
+  grid-row-gap: 35px;
 }
 
 .gallery img {
   width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 #contact {
   width: 50%;
@@ -219,7 +235,7 @@ footer li {
   height: 59px;
   width: 100%;
   background-color: #000;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -378,6 +394,13 @@ footer li {
   gap: 6px;
   background-color: #e8f1f6;
   border-radius: 5px;
+  overflow: hidden;
+}
+
+.label-add .img-preview {
+  display: none;
+  object-fit: cover;
+  height: 100%;
 }
 
 .label-add .icon-image {
@@ -390,6 +413,10 @@ footer li {
   background-color: #cbd6dc;
   border-radius: 50px;
   color: #306685;
+}
+
+#form-add .label-input-add:hover {
+  cursor: pointer;
 }
 
 #form-add #input-add {
@@ -435,7 +462,6 @@ footer li {
 
 #modal-add .fa-arrow-left:hover,
 #modal-add .fa-xmark:hover,
-#modal-add .label-input-add:hover,
 #modal-add #select-category:hover,
 #modal-add #input-submit:hover {
   cursor: pointer;

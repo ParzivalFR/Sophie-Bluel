@@ -51,6 +51,7 @@ function displayBtnFilter() {
       `btn${categorie.name.replace(/[^\w\s]/gi, "").replace(/\s+/g, "-")}`
     ); // Remplace les espaces par des tirets & supprime les caractères spéciaux
     buttons.addEventListener("click", () => {
+      toggleButtonColor();
       gallery.innerHTML = "";
       const filterWorks = works.filter(
         (work) => work.category.name === categorie.name
@@ -58,6 +59,20 @@ function displayBtnFilter() {
       displayWorks(filterWorks);
     });
     divBtn.appendChild(buttons);
+  });
+}
+
+function toggleButtonColor() {
+  // Sélectionnez tous les boutons dans la divBtn
+  const buttons = document.querySelectorAll(".divBtn button");
+  // Parcourez tous les boutons
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      // Supprimez la classe 'active' de tous les boutons
+      buttons.forEach((btn) => btn.classList.remove("active"));
+      // Ajoutez la classe 'active' uniquement au bouton cliqué
+      button.classList.add("active");
+    });
   });
 }
 
@@ -72,6 +87,7 @@ if (token) {
   displayModalGallery();
   displayModalAdd();
   openAndCloseModal();
+  postNewWork();
 
   // Optionnelle
   btnLogin.addEventListener("click", () => {
@@ -230,29 +246,30 @@ function displayModalAdd() {
   const modalAdd = document.createElement("div");
   modalAdd.setAttribute("id", "modal-add");
   modalAdd.innerHTML = `
-    <div class="return-and-exit">
+  <div class="return-and-exit">
       <i class="fa-solid fa-arrow-left" id="return"></i>
-      <i class="fa-solid fa-xmark" id="close-modal-add"></i>
+    <i class="fa-solid fa-xmark" id="close-modal-add"></i>
     </div>
-    <form action="POST" id="form-add">
-      <h3 class="title-add">Ajout photo</h3>
-      <label for="input-add" class="label-add">
-        <span class="icon-image"><i class="fa-solid fa-image"></i></span>
-        <label for="input-add" class="label-input-add">+ Ajouter photo</label>
-        <input type="file" name="add-image" id="input-add" />
-        <span class="desc-add">jpeg, png : 4mo max</span>
-      </label>
-      <div class="div-input">
-        <label for="input-title">Titre</label>
-        <input type="text" id="input-title" placeholder="Entrer un titre...">
-        <label for="select-category">Catégories</label>
-        <select name="select-category" id="select-category">
-          <option value="Selection" selected>Selectionner une catégorie...</option>
-        </select>
-        <hr class="bar-separator">
-        <input type="submit" value="Valider" id="input-submit">
-      </div>
-    </form>
+  <form action="/upload" method="post" id="form-add">
+     <h3 class="title-add">Ajout photo</h3>
+     <label for="input-add" class="label-add">
+       <img src="" alt="image upload" class="img-preview">
+       <span class="icon-image"><i class="fa-solid fa-image"></i></span>
+       <label for="input-add" class="label-input-add">+ Ajouter photo</label>
+       <input type="file" name="add-image" id="input-add" />
+       <span class="desc-add">jpeg, png : 4mo max</span>
+     </label>
+     <div class="div-input">
+       <label for="input-title">Titre</label>
+       <input type="text" id="input-title" placeholder="Entrer un titre...">
+       <label for="select-category">Catégories</label>
+       <select name="select-category" id="select-category">
+         <option value="" disabled selected>Sélectionner la catégorie...</option>
+       </select>
+       <hr class="bar-separator">
+      <input type="submit" value="Valider" id="input-submit">
+    </div>
+  </form>
 `;
   modal.appendChild(modalAdd);
   // Ajout des catégories
@@ -263,152 +280,135 @@ function displayModalAdd() {
     option.innerText = category.name;
     selectCategory.appendChild(option);
   });
+}
 
+function postNewWork() {
   const inputAdd = document.getElementById("input-add");
-  const descAdd = document.querySelector(".desc-add");
   inputAdd.addEventListener("change", () => {
-    const file = inputAdd.files;
-    if (file.length > 0) {
+    const file = inputAdd.files[0];
+    if (file && file.size <= 4000000) {
       const fileReader = new FileReader();
-      fileReader.onload = (event) => {
-        const img = new Image();
-        img.src = event.target.result;
-        img.onload = () => {
-          const width = img.width;
-          const height = img.height;
-          if (width > 1920 || height > 1080) {
-            Swal.fire({
-              icon: "error",
-              title: "Oops...",
-              text: "L'image est trop grande !",
-            });
-            inputAdd.value = "";
-          } else {
-            descAdd.innerText = "Fichier valide !";
-          }
-        };
+      fileReader.onload = () => {
+        const imgPreview = document.querySelector(".img-preview");
+        const iconImage = document.querySelector(".icon-image");
+        const labelInputAdd = document.querySelector(".label-input-add");
+        const descAdd = document.querySelector(".desc-add");
+
+        iconImage.style.display = "none";
+        inputAdd.style.display = "none";
+        labelInputAdd.style.display = "none";
+        descAdd.style.display = "none";
+
+        imgPreview.src = fileReader.result;
+        imgPreview.style.display = "flex";
+        descAdd.innerText = `Image validée : ${file.name}`;
       };
-      fileReader.readAsDataURL(file[0]);
+      fileReader.readAsDataURL(file);
+    } else if (file) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "L'image devrait se mettre au régime... 🍔🥤",
+      });
+      inputAdd.value = "";
+    }
+  });
+  // Envoi du formulaire
+  const inputTitle = document.getElementById("input-title");
+  const selectCategory = document.getElementById("select-category");
+  const inputSubmit = document.getElementById("input-submit");
+  inputSubmit.addEventListener("click", async (event) => {
+    event.preventDefault();
+    if (
+      inputAdd.value === "" ||
+      inputTitle.value === "" ||
+      selectCategory.value === ""
+    ) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Je crois que vous avez oublié quelque chose... 🤔",
+      });
+    } else {
+      const formData = new FormData();
+      formData.append("image", inputAdd.files[0]);
+      formData.append("title", inputTitle.value);
+      formData.append("category", selectCategory.value);
+      const response = await fetch("http://localhost:5678/api/works", {
+        method: "POST",
+        body: formData,
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        Swal.fire({
+          icon: "success",
+          title: "Bravo !",
+          text: "Votre travail a bien été ajouté ! 🎉",
+        });
+        const newWork = await response.json();
+        // Réinitialisation de l'input Add & champs
+        resetInputAdd();
+        // Ajout du travail dans la galerie
+        addWorksGallery(newWork);
+        // Ajout de l'image dans la galerie modal
+        addImgModalGallery(newWork);
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Une erreur s'est produite lors de l'ajout de votre travail... 😔",
+        });
+      }
     }
   });
 }
 
-// function createSecondModal() {
-//   // Quand je clique sur le bouton "Ajouter une image"...
+function resetInputAdd() {
+  // Réinitialisation de l'input Add
+  const imgPreview = document.querySelector(".img-preview");
+  const iconImage = document.querySelector(".icon-image");
+  const labelInputAdd = document.querySelector(".label-input-add");
+  const descAdd = document.querySelector(".desc-add");
+  const inputAdd = document.getElementById("input-add");
+  const inputTitle = document.getElementById("input-title");
+  const selectCategory = document.getElementById("select-category");
+  imgPreview.style.display = "none";
+  iconImage.style.display = "flex";
+  labelInputAdd.style.display = "flex";
+  descAdd.style.display = "flex";
+  // Réinitialisation des champs
+  inputAdd.value = "";
+  inputTitle.value = "";
+  selectCategory.value = "";
+}
 
-//   // ...je supprime le contenu de la modal...
-//   const modalContent = document.getElementById("modal-content");
-//   modalContent.innerHTML = "";
-//   const modal = document.getElementById("modal");
-//   const modalAddimg = document.createElement("div");
-//   modalAddimg.setAttribute("id", "modal-add-img");
-//   modal.appendChild(modalAddimg);
+async function addWorksGallery(newWork) {
+  // Ajout du travail dans la galerie
+  const gallery = document.querySelector(".gallery");
+  const figure = document.createElement("figure");
+  const img = document.createElement("img");
+  const figcaption = document.createElement("figcaption");
+  figure.classList.add(`figure-${newWork.id}`);
+  img.src = newWork.imageUrl;
+  figcaption.innerText = newWork.title;
+  gallery.appendChild(figure);
+  figure.appendChild(img);
+  figure.appendChild(figcaption);
+}
 
-//   const returnModal = document.createElement("i");
-//   returnModal.classList.add("fa-solid", "fa-arrow-left");
-
-//   const closeModal = document.createElement("i");
-//   closeModal.classList.add("fa-solid", "fa-xmark", "closeAddImg");
-
-//   const title = document.createElement("h3");
-//   title.innerText = "Ajouter une image";
-
-//   // ...je crée un formulaire pour ajouter une image...
-//   const form = document.createElement("form");
-//   form.setAttribute("id", "formAddImg");
-
-//   const labelIconInput = document.createElement("label");
-//   labelIconInput.classList.add("label-icon-input");
-
-//   const iconImg = document.createElement("i");
-//   iconImg.classList.add("fa-regular", "fa-image");
-
-//   const inputAdd = document.createElement("input");
-//   inputAdd.setAttribute("id", "addImg");
-//   inputAdd.setAttribute("type", "file");
-//   inputAdd.setAttribute("accept", "image/*");
-//   inputAdd.setAttribute("name", "addImg");
-
-//   const btnAddImg = document.createElement("input");
-//   btnAddImg.setAttribute("type", "button");
-//   btnAddImg.setAttribute("id", "btn-add-img");
-//   btnAddImg.value = "+ Ajouter photo";
-//   btnAddImg.addEventListener("click", () => {
-//     inputAdd.click();
-//   });
-
-//   const descAddImg = document.createElement("span");
-//   descAddImg.classList.add("desc-add-img");
-//   descAddImg.innerText = "jpeg, png : 4mo max";
-
-//   const labelTitle = document.createElement("label");
-//   labelTitle.setAttribute("for", "inputImgTitle");
-//   labelTitle.classList.add("label-title");
-//   labelTitle.innerText = "Titre";
-
-//   const inputTitle = document.createElement("input");
-//   inputTitle.setAttribute("type", "text");
-//   inputTitle.setAttribute("id", "inputImgTitle");
-//   inputTitle.setAttribute("placeholder", "Ajouter un titre...");
-
-//   const labelCategory = document.createElement("label");
-//   labelCategory.setAttribute("for", "selectCategory");
-//   labelCategory.classList.add("label-category");
-//   labelCategory.innerText = "Catégorie";
-
-//   const selectCategory = document.createElement("select");
-//   selectCategory.setAttribute("id", "selectCategory");
-
-//   const optionSelect = document.createElement("option");
-//   optionSelect.innerText = "Sélectionner une catégorie...";
-//   optionSelect.setAttribute("selected", "selected");
-
-//   const optionObjets = document.createElement("option");
-//   optionObjets.setAttribute("value", "Objets");
-//   optionObjets.innerText = "Objets";
-
-//   const optionHotel = document.createElement("option");
-//   optionHotel.setAttribute("value", "Hôtel & restaurant");
-//   optionHotel.innerText = "Hôtel & restaurant";
-
-//   const optionAppartement = document.createElement("option");
-//   optionAppartement.setAttribute("value", "Appartement");
-//   optionAppartement.innerText = "Appartement";
-
-//   const separatorbar = document.createElement("hr");
-//   separatorbar.setAttribute("id", "separatorbar");
-
-//   const submitAddImg = document.createElement("input");
-//   submitAddImg.setAttribute("type", "submit");
-//   submitAddImg.setAttribute("value", "Ajouter");
-//   submitAddImg.setAttribute("id", "submitAddImg");
-//   // ...et je les ajoute à la modal
-//   modal.appendChild(modalAddimg);
-//   modalAddimg.appendChild(returnModal);
-//   modalAddimg.appendChild(closeModal);
-//   modalAddimg.appendChild(title);
-//   modalAddimg.appendChild(form);
-//   labelIconInput.appendChild(iconImg);
-//   labelIconInput.appendChild(inputAdd);
-//   labelIconInput.appendChild(btnAddImg);
-//   labelIconInput.appendChild(descAddImg);
-//   form.appendChild(labelIconInput);
-//   form.appendChild(labelTitle);
-//   form.appendChild(inputTitle);
-//   form.appendChild(labelCategory);
-//   form.appendChild(selectCategory);
-//   selectCategory.appendChild(optionSelect);
-//   selectCategory.appendChild(optionObjets);
-//   selectCategory.appendChild(optionHotel);
-//   selectCategory.appendChild(optionAppartement);
-//   form.appendChild(separatorbar);
-//   form.appendChild(submitAddImg);
-
-//   // Fermeture de la modal
-//   // Retour à la modal principale
-//   returnModal.addEventListener("click", () => {
-//     modalAddimg.style.display = "none";
-//     displayModalGallery();
-//   });
-//   openAndCloseModal();
-// }
+async function addImgModalGallery(newWork) {
+  // Ajout de l'image dans la galerie modal
+  const divGallery = document.querySelector(".gallery-modal");
+  const figureModal = document.createElement("figure");
+  figureModal.classList.add(`figure-${newWork.id}`);
+  const imgModal = document.createElement("img");
+  const elementTrash = document.createElement("i");
+  elementTrash.classList.add("fa-solid", "fa-trash-can");
+  imgModal.src = newWork.imageUrl;
+  divGallery.appendChild(figureModal);
+  figureModal.appendChild(imgModal);
+  figureModal.appendChild(elementTrash);
+}

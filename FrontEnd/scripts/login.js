@@ -1,17 +1,17 @@
-async function displayErrorLogin(msg) {
-  const sectionLogin = document.querySelector(".login");
-  const divErrorMsg = document.createElement("div");
-  divErrorMsg.classList.add("div-msg", "div-error");
-  const errorMsg = document.createElement("p");
-  errorMsg.classList.add("error-msg");
-  sectionLogin.appendChild(divErrorMsg);
-  divErrorMsg.appendChild(errorMsg);
-  errorMsg.innerText = msg;
-  // Suppression du message après 5 secondes
-  setTimeout(() => {
-    divErrorMsg.remove();
-  }, 5000);
-}
+// async function displayErrorLogin(msg) {
+//   const sectionLogin = document.querySelector(".login");
+//   const divErrorMsg = document.createElement("div");
+//   divErrorMsg.classList.add("div-msg", "div-error");
+//   const errorMsg = document.createElement("p");
+//   errorMsg.classList.add("error-msg");
+//   sectionLogin.appendChild(divErrorMsg);
+//   divErrorMsg.appendChild(errorMsg);
+//   errorMsg.innerText = msg;
+//   // Suppression du message après 5 secondes
+//   setTimeout(() => {
+//     divErrorMsg.remove();
+//   }, 5000);
+// }
 
 document.addEventListener("DOMContentLoaded", () => {
   const formlogin = document.querySelector("#form-login");
@@ -25,7 +25,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const valuePassword = password.value.trim();
 
     if (valueEmail === "" || valuePassword === "") {
-      displayErrorLogin("🔎 Veuillez remplir tous les champs !");
+      email.value = "";
+      password.value = "";
+      // displayErrorLogin("🔎 Veuillez remplir tous les champs !");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "🔎 Veuillez remplir tous les champs !",
+      });
     } else {
       try {
         const fetchUser = await fetch("http://localhost:5678/api/users/login", {
@@ -40,18 +47,32 @@ document.addEventListener("DOMContentLoaded", () => {
           email.value = "";
           password.value = "";
           // Message de confirmation + 3 secs de délais avant redirection
-          displayErrorLogin("🟢 Vous êtes connecté avec succès !");
-          const divMsg = document.querySelector(".div-msg");
-          divMsg.classList.remove("div-error");
-          divMsg.classList.add("div-confirm");
+          // displayErrorLogin("🟢 Vous êtes connecté avec succès !");
+          // const divMsg = document.querySelector(".div-msg");
+          // divMsg.classList.remove("div-error");
+          // divMsg.classList.add("div-confirm");
+          Swal.fire({
+            icon: "success",
+            title: "Bravo...",
+            text: "🟢 Vous êtes connecté avec succès !",
+          });
           setTimeout(() => {
             window.location.href = "index.html";
           }, 3000);
         } else {
-          displayErrorLogin("🔎 Adresse mail et/ou mot de passe incorrect !");
+          // displayErrorLogin("🔎 Adresse mail et/ou mot de passe incorrect !");
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: "🔎 Adresse mail et/ou mot de passe incorrect !",
+          });
         }
       } catch (error) {
-        displayErrorLogin(error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: `${error}`,
+        });
       }
     }
   });
