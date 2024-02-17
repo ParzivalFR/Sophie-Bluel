@@ -33,16 +33,18 @@ function displayBtnFilter() {
   const divBtn = document.createElement("div");
   divBtn.classList.add("divBtn");
   title.insertBefore(divBtn, subTitle);
-
+  // Création du bouton "TOUS"
   const gallery = document.querySelector(".gallery");
   const btnAll = document.createElement("button");
   btnAll.classList.add("btnAll");
+  btnAll.classList.add("active");
   btnAll.innerText = "TOUS";
   divBtn.appendChild(btnAll);
   btnAll.addEventListener("click", () => {
     gallery.innerHTML = "";
     displayWorks(works);
   });
+
   // Création des bouton grâce à l'API
   categories.forEach((categorie) => {
     const buttons = document.createElement("button");
@@ -51,7 +53,6 @@ function displayBtnFilter() {
       `btn${categorie.name.replace(/[^\w\s]/gi, "").replace(/\s+/g, "-")}`
     ); // Remplace les espaces par des tirets & supprime les caractères spéciaux
     buttons.addEventListener("click", () => {
-      toggleButtonColor();
       gallery.innerHTML = "";
       const filterWorks = works.filter(
         (work) => work.category.name === categorie.name
@@ -60,22 +61,25 @@ function displayBtnFilter() {
     });
     divBtn.appendChild(buttons);
   });
+  toggleButtonColor();
 }
 
+// Ajout d'un style au bouton cliqué
 function toggleButtonColor() {
-  // Sélectionnez tous les boutons dans la divBtn
+  // Selection de tous les boutons
   const buttons = document.querySelectorAll(".divBtn button");
-  // Parcourez tous les boutons
+  // Ajout de la classe 'active' uniquement au bouton cliqué
   buttons.forEach((button) => {
     button.addEventListener("click", () => {
-      // Supprimez la classe 'active' de tous les boutons
+      // Suppression de la classe 'active' de tous les boutons
       buttons.forEach((btn) => btn.classList.remove("active"));
-      // Ajoutez la classe 'active' uniquement au bouton cliqué
+      // Ajout de la classe 'active' uniquement au bouton cliqué
       button.classList.add("active");
     });
   });
 }
 
+// Récupération du token
 const token = localStorage.getItem("token");
 
 if (token) {
@@ -86,16 +90,18 @@ if (token) {
   displayModeEdit();
   displayModalGallery();
   displayModalAdd();
-  openAndCloseModal();
+  enabledOrDisabledSubmit();
+  getNewWork();
   postNewWork();
-
-  // Optionnelle
+  openAndCloseModal();
+  // Suppression du token et redirection vers la page de connexion
   btnLogin.addEventListener("click", () => {
     localStorage.removeItem("token");
     window.location.href = "login.html";
   });
 }
 
+// Ouverture du mode edition
 async function displayModeEdit() {
   // Suppression des boutons de filtre
   document.querySelector(".divBtn").remove();
@@ -118,6 +124,7 @@ async function displayModeEdit() {
   titlePortfolio.appendChild(modify);
 }
 
+// Ouverture et fermeture des modals
 function openAndCloseModal() {
   const modify = document.querySelector(".modify");
   const modal = document.getElementById("modal");
@@ -142,12 +149,14 @@ function openAndCloseModal() {
       modal.style.display = "none";
       modalContent.style.display = "none";
       modalAdd.style.display = "none";
+      resetInputAdd();
     }
   });
   // Retour à la modal principale
   returnModal.addEventListener("click", () => {
     modalAdd.style.display = "none";
     modalContent.style.display = "flex";
+    resetInputAdd();
   });
   // Fermeture de la modal
   closeModals.forEach((closeModal) => {
@@ -155,10 +164,12 @@ function openAndCloseModal() {
       modal.style.display = "none";
       modalContent.style.display = "none";
       modalAdd.style.display = "none";
+      resetInputAdd();
     });
   });
 }
 
+// Affichage de la galerie photo dans la modal-content
 function displayModalGallery() {
   const modalContent = document.getElementById("modal-content");
   const closeModalContent = document.createElement("i");
@@ -180,7 +191,7 @@ function displayModalGallery() {
   modalContent.appendChild(divGallery);
   modalContent.appendChild(bottomLine);
   modalContent.appendChild(btnAddImg);
-  // Ajout des images
+  // Parcours des travaux pour les afficher dans la galerie modal
   works.forEach((work) => {
     const worksId = work.id;
     const figure = document.createElement("figure");
@@ -192,53 +203,59 @@ function displayModalGallery() {
     divGallery.appendChild(figure);
     figure.appendChild(img);
     figure.appendChild(elementTrash);
-
+    // Suppression de l'image dans la galerie modal et dans la galerie principale
     elementTrash.addEventListener("click", async (event) => {
-      const confirmationResult = await Swal.fire({
-        title: "Voulez-vous vraiment supprimer cette image ?",
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonText: "Oui",
-        cancelButtonText: "Non",
-      });
-
-      if (confirmationResult.isConfirmed) {
-        try {
-          const fetchWorks = await fetch(
-            `http://localhost:5678/api/works/${worksId}`,
-            {
-              method: "DELETE",
-              headers: {
-                accept: "*/*",
-                Authorization: `Bearer ${token}`,
-              },
-            }
-          );
-
-          if (fetchWorks.ok) {
-            document
-              .querySelectorAll(`.figure-${worksId}`)
-              .forEach((figure) => figure.remove());
-            event.preventDefault();
-            console.log("🗑️ Vous avez supprimé un travail !");
-          } else {
-            console.error(
-              "Une erreur s'est produite lors de la suppression de l'image."
-            );
-          }
-        } catch (error) {
-          console.error(
-            "Une erreur s'est produite lors de la suppression de l'image:",
-            error
-          );
-        }
-      } else {
-        console.log("L'utilisateur a choisi 'Non' ou a annulé");
-      }
+      deletedWorks(event, worksId);
     });
   });
 }
 
+async function deletedWorks(event, worksId) {
+  const confirmationResult = await Swal.fire({
+    title: "Voulez-vous vraiment supprimer cette image ?",
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Oui",
+    cancelButtonText: "Non",
+  });
+  // Si OUI :
+  if (confirmationResult.isConfirmed) {
+    try {
+      const fetchWorks = await fetch(
+        `http://localhost:5678/api/works/${worksId}`,
+        {
+          method: "DELETE",
+          headers: {
+            accept: "*/*",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      // Si la suppression est un succès
+      if (fetchWorks.ok) {
+        document
+          .querySelectorAll(`.figure-${worksId}`)
+          .forEach((figure) => figure.remove());
+        event.preventDefault();
+        console.log("🗑️ Vous avez supprimé un travail !");
+      } else {
+        console.error(
+          "Une erreur s'est produite lors de la suppression de l'image."
+        );
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: `Une erreur s'est produite lors de la suppression de l'image : ${error} 😔`,
+      });
+    }
+  } else {
+    console.log("L'utilisateur a choisi 'Non' ou a annulé");
+  }
+}
+
+// Affichage de la modal pour ajouter un travail
 function displayModalAdd() {
   const modal = document.getElementById("modal");
   const modalContent = document.getElementById("modal-content");
@@ -272,7 +289,7 @@ function displayModalAdd() {
   </form>
 `;
   modal.appendChild(modalAdd);
-  // Ajout des catégories
+  // Ajout des catégories dans le select
   const selectCategory = document.getElementById("select-category");
   categories.forEach((category) => {
     const option = document.createElement("option");
@@ -282,38 +299,88 @@ function displayModalAdd() {
   });
 }
 
-function postNewWork() {
+// Activation ou désactivation du bouton submit
+function enabledOrDisabledSubmit() {
+  const inputAdd = document.getElementById("input-add");
+  const inputTitle = document.getElementById("input-title");
+  const selectCategory = document.getElementById("select-category");
+  const inputSubmit = document.getElementById("input-submit");
+  const updateStateBtnSubmit = () => {
+    const file = inputAdd.files[0];
+    if (
+      !file ||
+      inputAdd.value === "" ||
+      inputTitle.value.trim() === "" ||
+      selectCategory.value === ""
+    ) {
+      inputSubmit.disabled = true;
+      inputSubmit.style.cursor = "not-allowed";
+      inputSubmit.style.backgroundColor = "#d3d3d3";
+    } else {
+      inputSubmit.disabled = false;
+      inputSubmit.style.cursor = "pointer";
+      inputSubmit.style.backgroundColor = "#1d6154";
+    }
+  };
+  // Ajouter des écouteurs d'événements pour les champs d'entrée et de sélection
+  inputAdd.addEventListener("input", updateStateBtnSubmit);
+  inputTitle.addEventListener("input", updateStateBtnSubmit);
+  selectCategory.addEventListener("change", updateStateBtnSubmit);
+  // Appeler updateSubmitButtonState une première fois pour initialiser l'état du bouton
+  updateStateBtnSubmit();
+}
+
+// Vérification image et ajout de l'image
+function getNewWork() {
   const inputAdd = document.getElementById("input-add");
   inputAdd.addEventListener("change", () => {
     const file = inputAdd.files[0];
-    if (file && file.size <= 4000000) {
-      const fileReader = new FileReader();
-      fileReader.onload = () => {
-        const imgPreview = document.querySelector(".img-preview");
-        const iconImage = document.querySelector(".icon-image");
-        const labelInputAdd = document.querySelector(".label-input-add");
-        const descAdd = document.querySelector(".desc-add");
+    // Vérification du type de fichier : image/jpeg ou image/png
+    if (file.type === "image/jpeg" || file.type === "image/png") {
+      // Vérification de la taille de l'image : 4mo max
+      if (file && file.size <= 4000000) {
+        // Création d'un objet FileReader pour lire le contenu du fichier
+        const fileReader = new FileReader();
+        // Lorsque la lecture est terminée, l'URL de l'image est chargée
+        fileReader.onload = () => {
+          const imgPreview = document.querySelector(".img-preview");
+          const iconImage = document.querySelector(".icon-image");
+          const labelInputAdd = document.querySelector(".label-input-add");
+          const descAdd = document.querySelector(".desc-add");
+          iconImage.style.display = "none";
+          inputAdd.style.display = "none";
+          labelInputAdd.style.display = "none";
+          descAdd.style.display = "none";
 
-        iconImage.style.display = "none";
-        inputAdd.style.display = "none";
-        labelInputAdd.style.display = "none";
-        descAdd.style.display = "none";
-
-        imgPreview.src = fileReader.result;
-        imgPreview.style.display = "flex";
-        descAdd.innerText = `Image validée : ${file.name}`;
-      };
-      fileReader.readAsDataURL(file);
-    } else if (file) {
+          imgPreview.src = fileReader.result;
+          imgPreview.style.display = "flex";
+          descAdd.innerText = `Image validée : ${file.name}`;
+        };
+        // Lecture de l'URl de l'image
+        fileReader.readAsDataURL(file);
+      } else if (file) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "L'image devrait se mettre au régime... 🍔🥤",
+        });
+        inputAdd.value = "";
+      }
+    } else {
       Swal.fire({
         icon: "error",
         title: "Oops...",
-        text: "L'image devrait se mettre au régime... 🍔🥤",
+        text: "Veuillez sélectionner une image de type jpeg ou png... 🤔",
       });
       inputAdd.value = "";
     }
   });
+}
+
+// Envoi du nouveau travail
+function postNewWork() {
   // Envoi du formulaire
+  const inputAdd = document.getElementById("input-add");
   const inputTitle = document.getElementById("input-title");
   const selectCategory = document.getElementById("select-category");
   const inputSubmit = document.getElementById("input-submit");
@@ -321,7 +388,7 @@ function postNewWork() {
     event.preventDefault();
     if (
       inputAdd.value === "" ||
-      inputTitle.value === "" ||
+      inputTitle.value.trim() === "" ||
       selectCategory.value === ""
     ) {
       Swal.fire({
@@ -330,42 +397,55 @@ function postNewWork() {
         text: "Je crois que vous avez oublié quelque chose... 🤔",
       });
     } else {
-      const formData = new FormData();
-      formData.append("image", inputAdd.files[0]);
-      formData.append("title", inputTitle.value);
-      formData.append("category", selectCategory.value);
-      const response = await fetch("http://localhost:5678/api/works", {
-        method: "POST",
-        body: formData,
-        headers: {
-          accept: "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+      const confirmationResult = await Swal.fire({
+        title: "Voulez-vous vraiment ajouter ce projet ?",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonText: "Oui",
+        cancelButtonText: "Non",
       });
-      if (response.ok) {
-        Swal.fire({
-          icon: "success",
-          title: "Bravo !",
-          text: "Votre travail a bien été ajouté ! 🎉",
-        });
-        const newWork = await response.json();
-        // Réinitialisation de l'input Add & champs
-        resetInputAdd();
-        // Ajout du travail dans la galerie
-        addWorksGallery(newWork);
-        // Ajout de l'image dans la galerie modal
-        addImgModalGallery(newWork);
-      } else {
-        Swal.fire({
-          icon: "error",
-          title: "Oops...",
-          text: "Une erreur s'est produite lors de l'ajout de votre travail... 😔",
-        });
+      // Si je clique sur oui...
+      if (confirmationResult.isConfirmed) {
+        try {
+          const formData = new FormData();
+          formData.append("image", inputAdd.files[0]);
+          formData.append("title", inputTitle.value);
+          formData.append("category", selectCategory.value);
+          const response = await fetch("http://localhost:5678/api/works", {
+            method: "POST",
+            body: formData,
+            headers: {
+              accept: "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (response.ok) {
+            Swal.fire({
+              icon: "success",
+              title: "Bravo !",
+              text: "Votre travail a bien été ajouté ! 🎉",
+            });
+            const newWork = await response.json();
+            // Réinitialisation de l'input Add & champs
+            resetInputAdd();
+            // Ajout du travail dans la galerie
+            addWorksGallery(newWork);
+            // Ajout de l'image dans la galerie modal
+            addImgModalGallery(newWork);
+          }
+        } catch (error) {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: `Une erreur s'est produite lors de l'ajout de votre travail : ${error} 😔`,
+          });
+        }
       }
     }
   });
 }
 
+// Réinitialisation de l'input Add & des champs
 function resetInputAdd() {
   // Réinitialisation de l'input Add
   const imgPreview = document.querySelector(".img-preview");
@@ -375,6 +455,7 @@ function resetInputAdd() {
   const inputAdd = document.getElementById("input-add");
   const inputTitle = document.getElementById("input-title");
   const selectCategory = document.getElementById("select-category");
+  const inputSubmit = document.getElementById("input-submit");
   imgPreview.style.display = "none";
   iconImage.style.display = "flex";
   labelInputAdd.style.display = "flex";
@@ -383,8 +464,12 @@ function resetInputAdd() {
   inputAdd.value = "";
   inputTitle.value = "";
   selectCategory.value = "";
+  inputSubmit.disabled = true;
+  inputSubmit.style.cursor = "not-allowed";
+  inputSubmit.style.backgroundColor = "#d3d3d3";
 }
 
+// Ajout du travail dans la galerie principale
 async function addWorksGallery(newWork) {
   // Ajout du travail dans la galerie
   const gallery = document.querySelector(".gallery");
@@ -399,6 +484,7 @@ async function addWorksGallery(newWork) {
   figure.appendChild(figcaption);
 }
 
+// Ajout de l'image dans la galerie modal-content
 async function addImgModalGallery(newWork) {
   // Ajout de l'image dans la galerie modal
   const divGallery = document.querySelector(".gallery-modal");
@@ -408,6 +494,10 @@ async function addImgModalGallery(newWork) {
   const elementTrash = document.createElement("i");
   elementTrash.classList.add("fa-solid", "fa-trash-can");
   imgModal.src = newWork.imageUrl;
+  // Suppression de l'image
+  elementTrash.addEventListener("click", async (event) => {
+    deletedWorks(event, newWork.id);
+  });
   divGallery.appendChild(figureModal);
   figureModal.appendChild(imgModal);
   figureModal.appendChild(elementTrash);

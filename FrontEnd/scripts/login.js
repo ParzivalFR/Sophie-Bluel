@@ -46,11 +46,6 @@ document.addEventListener("DOMContentLoaded", () => {
           // Suppression du message après 3 secondes
           email.value = "";
           password.value = "";
-          // Message de confirmation + 3 secs de délais avant redirection
-          // displayErrorLogin("🟢 Vous êtes connecté avec succès !");
-          // const divMsg = document.querySelector(".div-msg");
-          // divMsg.classList.remove("div-error");
-          // divMsg.classList.add("div-confirm");
           Swal.fire({
             icon: "success",
             title: "Bravo...",
@@ -58,9 +53,10 @@ document.addEventListener("DOMContentLoaded", () => {
           });
           setTimeout(() => {
             window.location.href = "index.html";
-          }, 3000);
+          }, 2000);
         } else {
-          // displayErrorLogin("🔎 Adresse mail et/ou mot de passe incorrect !");
+          email.value = "";
+          password.value = "";
           Swal.fire({
             icon: "error",
             title: "Oops...",
