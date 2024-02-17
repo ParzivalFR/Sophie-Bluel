@@ -47,13 +47,14 @@ document.addEventListener("DOMContentLoaded", () => {
           email.value = "";
           password.value = "";
           Swal.fire({
+            position: "center",
             icon: "success",
-            title: "Bravo...",
-            text: "🟢 Vous êtes connecté avec succès !",
+            title: "Connecté avec succès !",
+            showConfirmButton: false,
           });
           setTimeout(() => {
             window.location.href = "index.html";
-          }, 2000);
+          }, 3000);
         } else {
           email.value = "";
           password.value = "";
