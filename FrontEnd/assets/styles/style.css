@@ -405,6 +405,8 @@ footer li {
 
 #form-add .label-input-add:hover {
   cursor: pointer;
+  background-color: #b9c5cc;
+  transition: background-color 0.5s ease;
 }
 
 #form-add #input-add {

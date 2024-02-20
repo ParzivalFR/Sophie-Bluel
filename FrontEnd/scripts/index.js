@@ -1,10 +1,17 @@
 // Récupération des Travaux
 const fetchWorks = await fetch("http://localhost:5678/api/works");
 const works = await fetchWorks.json();
-window.localStorage.setItem("works", JSON.stringify(works));
+// Récupération des Catégories
 const fetchCategories = await fetch("http://localhost:5678/api/categories");
 const categories = await fetchCategories.json();
-window.localStorage.setItem("categories", JSON.stringify(categories));
+
+if (fetchWorks.ok && fetchCategories.ok) {
+  console.log("🟢 Récupération des travaux et des catégories avec succès !");
+} else {
+  console.error(
+    "🔴 Une erreur s'est produite lors de la récupération des travaux et des catégories."
+  );
+}
 
 displayWorks(works);
 displayBtnFilter();
@@ -91,7 +98,7 @@ if (token) {
   displayModalGallery();
   displayModalAdd();
   enabledOrDisabledSubmit();
-  getNewWork();
+  getNewImg();
   postNewWork();
   openAndCloseModal();
   // Suppression du token et redirection vers la page de connexion
@@ -331,7 +338,7 @@ function enabledOrDisabledSubmit() {
 }
 
 // Vérification image et ajout de l'image
-function getNewWork() {
+function getNewImg() {
   const inputAdd = document.getElementById("input-add");
   inputAdd.addEventListener("change", () => {
     const file = inputAdd.files[0];
@@ -351,7 +358,6 @@ function getNewWork() {
           inputAdd.style.display = "none";
           labelInputAdd.style.display = "none";
           descAdd.style.display = "none";
-
           imgPreview.src = fileReader.result;
           imgPreview.style.display = "flex";
           descAdd.innerText = `Image validée : ${file.name}`;

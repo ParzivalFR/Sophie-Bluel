@@ -138,39 +138,3 @@ footer {
   right: 107px;
   padding: 20px 0;
 }
-
-/* Message d'erreur */
-
-.div-error {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 30%;
-  height: 50px;
-  background-color: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
-  border-radius: 5px;
-  position: absolute;
-  top: 170px;
-}
-
-.div-confirm {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 30%;
-  height: 50px;
-  background-color: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
-  border-radius: 5px;
-  position: absolute;
-  top: 170px;
-}
-
-.div-error p,
-.div-confirm p {
-  font-size: 14px;
-  font-weight: 700;
-}

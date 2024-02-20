@@ -1,33 +1,19 @@
-// async function displayErrorLogin(msg) {
-//   const sectionLogin = document.querySelector(".login");
-//   const divErrorMsg = document.createElement("div");
-//   divErrorMsg.classList.add("div-msg", "div-error");
-//   const errorMsg = document.createElement("p");
-//   errorMsg.classList.add("error-msg");
-//   sectionLogin.appendChild(divErrorMsg);
-//   divErrorMsg.appendChild(errorMsg);
-//   errorMsg.innerText = msg;
-//   // Suppression du message après 5 secondes
-//   setTimeout(() => {
-//     divErrorMsg.remove();
-//   }, 5000);
-// }
-
+// Chargement de la page login.html
 document.addEventListener("DOMContentLoaded", () => {
   const formlogin = document.querySelector("#form-login");
   const email = document.querySelector("#email");
   const password = document.querySelector("#password");
-
+  // Soumission du formulaire de connexion
   formlogin.addEventListener("submit", async (event) => {
     event.preventDefault();
-
-    const valueEmail = email.value.trim();
+    // utilisation de Trim() pour ne pas tenir compte des espaces avant et après les valeurs saisies
+    // Utilisation de ToLowerCase() pour ne pas tenir compte des majuscules dans l'adresse mail
+    const valueEmail = email.value.trim().toLowerCase();
     const valuePassword = password.value.trim();
-
+    // Vérification des champs vides et affichage d'un message d'erreur
     if (valueEmail === "" || valuePassword === "") {
       email.value = "";
       password.value = "";
-      // displayErrorLogin("🔎 Veuillez remplir tous les champs !");
       Swal.fire({
         icon: "error",
         title: "Oops...",
